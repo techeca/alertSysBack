@@ -1,18 +1,22 @@
-import { User } from '../models/user.js'
+import { Zone } from '../models/zone.js'
 import jwt from 'jsonwebtoken'
 
-export async function register(req, res){
+export async function newZone(req, res){
   try {
-    const newUser = new User({
-        email: req.body.email,
-        password: req.body.password
+    const newZone = new Zone({
+        name: req.body.name,
+        description: req.body.description
     })
-    const findUser = await UserfindOne({ email:req.body.email }).exec()
-    if(isNaN(findUser)){
-      throw 'El Email ingresado ya está registrado'
+    if(req.body.name === '' || req.body.description === ''){
+      throw 'Campos en blanco'
+    }
+    const findZone = await Zone.findOne({ name:req.body.name }).exec()
+    console.log(isNaN(findZone));
+    if(isNaN(findZone)){
+      throw 'Zona ya registrada'
     } else {
-      await newUser.save()
-      return res.status(200).json(newUser)
+      await newZone.save()
+      return res.status(200).json(newZone)
     }
   } catch (e) {
     return res.status(500).json({message:e})
@@ -23,21 +27,14 @@ export async function login(req, res){
   try {
     const email = String(req.body.email)
     const password = String(req.body.password)
-    console.log('try to login')
-    console.log(req.body.email);
-    console.log(req.body.password);
-
     const userData = await User.findOne({ email:email, password:password }).exec()
     //const userData = await User.findOne({ 'email': req.body.email }, 'email').exec()
 
     console.log(userData);
     if(isNaN(userData)){
-      console.log('user encontrado');
-      console.log(userData._id);
       const token = jwt.sign({sub: userData._id}, process.env.API_KEY, { expiresIn:'7d' })
       return res.status(200).json({name: userData.name, email:userData.email, cargo:userData.cargo, estado:userData.estado, token})
     }else {
-      console.log('user no encontrado');
       return res.status(404).json({code:'404', message:'Not Found'})
       //throw `Usuario no encontrado`
     }

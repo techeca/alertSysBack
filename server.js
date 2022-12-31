@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors';
 import { userRouter } from './routes/user.js'
+import { zoneRouter } from './routes/zone.js'
 //import { version } from './package.json'
 
 const app = express()
@@ -18,8 +19,10 @@ export function startServer(){
       res.json({backendStatus:'ok'})
     })
 
+    app.use('/api/zone', zoneRouter);
+
     app.use('/api/user', userRouter)
-    console.log('ROUTES: /health - /api/user')
+    console.log('ROUTES: /health - /api/user/login - /api/zone/newzone')
   })
 
 }
