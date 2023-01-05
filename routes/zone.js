@@ -1,5 +1,5 @@
 import express from 'express'
-import { newZone } from '../controllers/zone.js'
+import { newZone, allZones } from '../controllers/zone.js'
 import { apiHandler } from '../jwt/index.js'
 import cors from 'cors'
 
@@ -16,9 +16,9 @@ const optionsCORS = {
 
 //zonesRouter.options('/register', cors(optionsCORS))
 zoneRouter.options('/newzone', cors(optionsCORS))
-//zoneRouter.options('/zones', cors(optionsCORS))
+zoneRouter.options('/', cors(optionsCORS))
 
-//zonesRouter.post('/register', cors(optionsCORS), apiHandler(register));   //ex: apiHandler(register) best ex: zonesRouter.post('/register', apiHandler(register))
+zoneRouter.get('/', cors(optionsCORS), apiHandler(allZones));   //ex: apiHandler(register) best ex: zonesRouter.post('/register', apiHandler(register))
 zoneRouter.post('/newzone', cors(optionsCORS), apiHandler(newZone));
 
 /*zonesRouter.get('/health', cors(optionsCORS), (req, res) => {

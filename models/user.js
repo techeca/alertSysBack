@@ -7,6 +7,7 @@ const UserSchema = Schema({
   name: String,
   cargo: String,
   estado: Boolean,
+  rut: String
 },
   {
     collection: 'users'

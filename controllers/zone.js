@@ -13,7 +13,7 @@ export async function newZone(req, res){
     const findZone = await Zone.findOne({ name:req.body.name }).exec()
     console.log(isNaN(findZone));
     if(isNaN(findZone)){
-      throw 'Zona ya registrada'
+      throw 'Zona ya registrada???'
     } else {
       await newZone.save()
       return res.status(200).json(newZone)
@@ -23,22 +23,16 @@ export async function newZone(req, res){
   }
 }
 
-export async function login(req, res){
+export async function allZones(req, res){
   try {
-    const email = String(req.body.email)
-    const password = String(req.body.password)
-    const userData = await User.findOne({ email:email, password:password }).exec()
-    //const userData = await User.findOne({ 'email': req.body.email }, 'email').exec()
-
-    console.log(userData);
-    if(isNaN(userData)){
-      const token = jwt.sign({sub: userData._id}, process.env.API_KEY, { expiresIn:'7d' })
-      return res.status(200).json({name: userData.name, email:userData.email, cargo:userData.cargo, estado:userData.estado, token})
+    const findAll = await Zone.find().exec()
+    console.log(findAll.length);
+    if(!findAll.length > 0){
+      throw 'No hay zonas'
     }else {
-      return res.status(404).json({code:'404', message:'Not Found'})
-      //throw `Usuario no encontrado`
+      return res.status(200).json(findAll)
     }
   } catch (e) {
-    console.log(`error login en API: ${e}`);
+    return res.status(500).json({message:e})
   }
 }

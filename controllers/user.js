@@ -7,7 +7,7 @@ export async function register(req, res){
         email: req.body.email,
         password: req.body.password
     })
-    const findUser = await UserfindOne({ email:req.body.email }).exec()
+    const findUser = await User.findOne({ email:req.body.email }).exec()
     if(isNaN(findUser)){
       throw 'El Email ingresado ya está registrado'
     } else {
@@ -16,6 +16,39 @@ export async function register(req, res){
     }
   } catch (e) {
     return res.status(500).json({message:e})
+  }
+}
+
+export async function newUser(req, res){
+  try {
+    const newUser = new User({
+        email: req.body.email,
+        password: req.body.password,
+        name: req.body.name,
+        cargo: req.body.cargo,
+        estado: req.body.estado,
+        rut: req.body.rut
+    })
+    if(req.body.email === '' || req.body.rut === ''){
+      throw 'Campos en blanco'
+    }
+    const find = await User.find({ rut: req.body.rut }).exec()
+    //console.log(isNaN(find));
+    //console.log(find);
+    if(isNaN(find)){
+      throw 'Usuario ya existe'
+    } else {
+      await newUser.save()
+      return res.status(200).json(newUser)
+    }
+  } catch (e) {
+    if(e === 'Usuario ya existe')
+    {
+      console.log(e);
+      return res.status(400).json({message:e})
+    } else {
+      return res.status(500).json({message:e})
+    }
   }
 }
 
@@ -38,7 +71,7 @@ export async function login(req, res){
       return res.status(200).json({name: userData.name, email:userData.email, cargo:userData.cargo, estado:userData.estado, token})
     }else {
       console.log('user no encontrado');
-      return res.status(404).json({code:'404', message:'Not Found'})
+      return res.status(403).json({code:'403', message:'Not Found'})
       //throw `Usuario no encontrado`
     }
   } catch (e) {
